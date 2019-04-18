@@ -78,3 +78,27 @@ def plot_all_ne_estimates(sp_infiles, smcpp_infiles, msmc_infiles, outfile):
     ax.set_ylabel("population size")
     ax.legend((line1, line2, line3), ('smc++', 'stairwayplot', 'msmc'))
     f.savefig(outfile, bbox_inches='tight', alpha=0.8)
+
+
+def plot_all_ne_estimates_seperate(sp_infiles, smcpp_infiles, msmc_infiles, outfile):
+    f, ax = plt.subplots(figsize=(7, 7))
+    ax.set(xscale="log", yscale="log")
+    # plot smcpp estimates
+    for infile in smcpp_infiles:
+        nt = pandas.read_csv(infile, usecols=[1, 2], skiprows=0)
+        line1, = ax.plot(nt['x'], nt['y'], c="red", alpha=0.8, label='smc++')
+    # plot stairwayplot estimates
+    for infile in sp_infiles:
+        nt = pandas.read_csv(infile, sep="\t", skiprows=5)
+        line2, = ax.plot(nt['year'], nt['Ne_median'], c="blue", label='stairwayplot')
+    # plot msmc estimates
+    for infile in msmc_infiles:
+        samp = infile.split(".")[1]
+        nt = pandas.read_csv(infile, usecols=[1, 2], skiprows=0)
+        line3, = ax.plot(nt['x'], nt['y'], c="purple", alpha=0.8, label='msmc '+samp+" samples")
+    # TODO add a plot  of true history
+
+    ax.set_xlabel("time (years)")
+    ax.set_ylabel("population size")
+    ax.legend((line1, line2, line3), ('smc++', 'stairwayplot', 'msmc'))
+    f.savefig(outfile, bbox_inches='tight', alpha=0.8)
